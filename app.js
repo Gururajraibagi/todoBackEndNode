@@ -3,6 +3,7 @@ const app = express();
 const PORT = 3000;
 const { RouteList } = require("./RoutesList");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const {
   getRoutes,
@@ -13,14 +14,9 @@ const {
   deleteNote,
 } = require("./TodoSeriveController");
 
-const uri =
-  "mongodb+srv://gururaj:<password>@cluster0.hjh6hx2.mongodb.net/todo";
+const uri = "mongodb+srv://gururaj:@cluster0.hjh6hx2.mongodb.net/todo";
 
-mongoose.connect(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
+app.use(cors());
 app.use(express.json());
 Note = [{ id: 1, body: "first one", updated: Date.now(), created: Date.now() }];
 console.log("le im printing", Note[0].body);
@@ -35,12 +31,15 @@ console.log("le im printing", Note[0].body);
 
 const router = express.Router();
 
-//router.route("/").get(getRoutes);
-router.route("/").get(getNotes).post(createNote);
+router.route("/routes").get(getRoutes);
+router.route("/").get(getNotes);
+router.route("/create").post(createNote);
 //router.route("/notes/create").post(createNote);
-router.route("/:id").get(getNote).put(updateNote).delete(deleteNote);
+router.route("/:id").get(getNote);
+router.route("/:id/update").put(updateNote);
+router.route("/:id/delete").delete(deleteNote);
 
-app.use("/note", router);
+app.use("/api/notes", router);
 /* app.get("", (req, res) => {
   routes = RouteList;
   res.send(routes);
@@ -97,6 +96,11 @@ app.delete("/notes/:id/delete", (req, res) => {
 
 app.listen(PORT, () => {
   console.log("server is running on port updated", PORT);
+});
+
+mongoose.connect(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
 
 /* const http = require("http");
