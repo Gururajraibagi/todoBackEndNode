@@ -1,6 +1,25 @@
 const express = require("express");
 const app = express();
 const PORT = 3000;
+const { RouteList } = require("./RoutesList");
+const mongoose = require("mongoose");
+
+const {
+  getRoutes,
+  getNotes,
+  createNote,
+  getNote,
+  updateNote,
+  deleteNote,
+} = require("./TodoSeriveController");
+
+const uri =
+  "mongodb+srv://gururaj:<password>@cluster0.hjh6hx2.mongodb.net/todo";
+
+mongoose.connect(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 app.use(express.json());
 Note = [{ id: 1, body: "first one", updated: Date.now(), created: Date.now() }];
@@ -14,42 +33,19 @@ console.log("le im printing", Note[0].body);
     path('notes/<str:pk>',views.getNote,name='note'),
  */
 
-app.get("", (req, res) => {
-  routes = [
-    {
-      Endpoint: "/notes/",
-      method: "GET",
-      body: null,
-      description: "Returns an array of notes",
-    },
-    {
-      Endpoint: "/notes/id",
-      method: "GET",
-      body: null,
-      description: "Returns a single note object",
-    },
-    {
-      Endpoint: "/notes/create/",
-      method: "POST",
-      body: { body: "" },
-      description: "Creates new note with data sent in post request",
-    },
-    {
-      Endpoint: "/notes/id/update/",
-      method: "PUT",
-      body: { body: "" },
-      description: "Creates an existing note with data sent in post request",
-    },
-    {
-      Endpoint: "/notes/id/delete/",
-      method: "DELETE",
-      body: null,
-      description: "Deletes and exiting note",
-    },
-  ];
-  res.send(routes);
-});
+const router = express.Router();
 
+//router.route("/").get(getRoutes);
+router.route("/").get(getNotes).post(createNote);
+//router.route("/notes/create").post(createNote);
+router.route("/:id").get(getNote).put(updateNote).delete(deleteNote);
+
+app.use("/note", router);
+/* app.get("", (req, res) => {
+  routes = RouteList;
+  res.send(routes);
+}); */
+/* 
 //Getall notes
 app.get("/notes", (req, res) => {
   res.send(Note);
@@ -97,7 +93,7 @@ app.delete("/notes/:id/delete", (req, res) => {
   Note = Note.filter((note) => note.id != id);
 
   res.send(Note);
-});
+}); */
 
 app.listen(PORT, () => {
   console.log("server is running on port updated", PORT);
